@@ -7,7 +7,6 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "preversion": "pnpm run lint",
