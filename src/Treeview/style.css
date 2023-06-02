@@ -1,0 +1,20 @@
+div.tree-view {
+  user-select: none;
+  outline: none;
+}
+
+.tree-view .tree-node-half-selected {
+  outline: 1px solid var(--select-bg-color);
+  /*-moz-outline-radius: 5px;*/
+  border-radius: 5px;
+}
+
+.tree-view .tree-node-selected {
+  background-color: var(--select-bg-color);
+  color: var(--select-fg-color);
+  border-radius: 5px;
+}
+
+.tree-view .tree-node-half-selected.tree-node-selected {
+  outline: 1px solid var(--select-outline-color);
+}
