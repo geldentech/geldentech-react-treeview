@@ -8,8 +8,6 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run lint",
-    "preversion": "pnpm run lint",
     "version": "pnpm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
