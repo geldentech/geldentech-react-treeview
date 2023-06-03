@@ -12,7 +12,7 @@ export type TreeViewContextProps = {
   setHalfSelectedNode: (node?: TreeNode) => void;
   data: TreeNode[];
   setData: (data: TreeNode[]) => void;
-  loadChildren: (node: TreeNode) => Promise<TreeNode[]>;
+  lazyLoadChildren: (node: TreeNode) => Promise<TreeNode[]>;
   expandedIds: string[];
   setExpandedIds: (ids: string[]) => void;
   multiSelect?: boolean;
@@ -30,7 +30,7 @@ export const TreeViewContext = createContext<TreeViewContextProps>({
   setHalfSelectedNode: () => {},
   data: [],
   setData: () => {},
-  loadChildren: async () => [],
+  lazyLoadChildren: async () => [],
   expandedIds: [],
   setExpandedIds: () => {},
   multiSelect: false,

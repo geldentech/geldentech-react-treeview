@@ -29,6 +29,8 @@ import { TreeViewProvider, useTreeView } from "./provider";
  */
 function LeafNode(props: {
   node: TreeNode;
+  className?: string;
+  style?: React.CSSProperties;
   Component?: (props: {
     node: TreeNode;
     isSelected: boolean;
@@ -36,7 +38,7 @@ function LeafNode(props: {
     isExpanded: boolean;
   }) => JSX.Element;
 }) {
-  const { Component, node } = props;
+  const { Component, node, className, style } = props;
   const { selectedNode, halfSelectedNode, expandedIds } = useTreeView();
   const isSelected = selectedNode?.id === node.id;
   const isHalfSelected = halfSelectedNode?.id === node.id;
@@ -50,7 +52,7 @@ function LeafNode(props: {
       isHalfSelected={isHalfSelected}
     />
   ) : (
-    <span className={`tree-node-leaf`} style={{ paddingLeft: 10 * level - 1 }}>
+    <span className={`${className} tree-node-leaf`} style={{ paddingLeft: 10 * level - 1, ...style }}>
       {node.name}
     </span>
   );
@@ -64,6 +66,12 @@ function LeafNode(props: {
  */
 function BranchNode(props: {
   node: TreeNode;
+  classes?: {
+    listItem?: string;
+    label?: string;
+    labelWrapper?: string;
+    list?: string;
+  }
   data: TreeNode[];
   Component?: (props: {
     node: TreeNode;
@@ -76,7 +84,7 @@ function BranchNode(props: {
     setSelectedNode,
     setHalfSelectedNode,
     setData,
-    loadChildren,
+    lazyLoadChildren,
     setExpandedIds,
     state,
     selectedNode,
@@ -95,7 +103,7 @@ function BranchNode(props: {
         data,
         state,
         setData,
-        loadChildren,
+        lazyLoadChildren,
         setExpandedIds,
         setHalfSelectedNode,
         setSelectedNode,
@@ -114,7 +122,7 @@ function BranchNode(props: {
         data,
         state,
         setData,
-        loadChildren,
+        lazyLoadChildren,
         setExpandedIds,
         setHalfSelectedNode,
         setSelectedNode,
@@ -128,22 +136,22 @@ function BranchNode(props: {
   const selected = selectedNode?.id === node.id;
   const halfSelected = state.halfSelectedNode?.id === node.id;
   return (
-    <ul>
+    <ul className={props.classes?.list}>
       {node.path !== "" && (
         <div
-          className={`tree-node-label ${selected ? `tree-node-selected` : ""} ${
+          className={`${props.classes?.labelWrapper} tree-node-label ${selected ? `tree-node-selected` : ""} ${
             halfSelected ? "tree-node-half-selected" : ""
           }`}
           onClick={singleClickSelect ? handleSelect : handleHalfSelect}
           onDoubleClick={singleClickSelect ? undefined : handleSelect}
         >
-          <LeafNode Component={props.Component} node={node} />
+          <LeafNode className={props.classes?.label} Component={props.Component} node={node} />
         </div>
       )}
       {children.map((child) => (
-        <li key={child.id}>
+        <li className={props.classes?.listItem} key={child.id}>
           {expanded && getChildren(child, data) && (
-            <BranchNode node={child} data={data} Component={props.Component} />
+            <BranchNode classes={props.classes} node={child} data={data} Component={props.Component} />
           )}
         </li>
       ))}
@@ -163,6 +171,8 @@ export function Tree<T = any>({
   singleClickExpand,
   defaultMultiSelectedIds,
   defaultSelectedId,
+  className,
+  classes,
 }: {
   cacheId?: string;
   treeDataConfig?: TreeDataConfig<T>;
@@ -188,6 +198,13 @@ export function Tree<T = any>({
   singleClickExpand?: boolean;
   defaultSelectedId?: string;
   defaultMultiSelectedIds?: string;
+  className?: string;
+  classes?: {
+    listItem?: string;
+    label?: string;
+    labelWrapper?: string;
+    list?: string;
+  }
 }) {
   const getDefaultExpandedIds = () => {
     const result: string[] = [];
@@ -257,7 +274,7 @@ export function Tree<T = any>({
     }
   };
 
-  async function updateChildrenForNode(node: TreeNode) {
+  async function lazyLoadChildren(node: TreeNode) {
     if (!onLoadChildren) return data;
     const oldChildren = getChildren(node, data);
     const children = await onLoadChildren(node, oldChildren);
@@ -295,7 +312,7 @@ export function Tree<T = any>({
           data,
           state,
           setData,
-          updateChildrenForNode,
+          lazyLoadChildren,
           setExpandedIds,
           setHalfSelectedNode,
           setSelectedNode
@@ -327,7 +344,7 @@ export function Tree<T = any>({
         setSelectedNode,
         data,
         setData,
-        loadChildren: updateChildrenForNode,
+        lazyLoadChildren,
         expandedIds,
         setExpandedIds,
         multiSelect,
@@ -337,8 +354,8 @@ export function Tree<T = any>({
         singleClickSelect,
       }}
     >
-      <div className="tree-view" tabIndex={0} ref={ref}>
-        <BranchNode Component={Component} node={root} data={data} />
+      <div className={`${className} tree-view`} tabIndex={0} ref={ref}>
+        <BranchNode classes={classes} Component={Component} node={root} data={data} />
       </div>
     </TreeViewProvider>
   );
