@@ -339,13 +339,6 @@ export function Tree<T = any>({
     >
       <div className="tree-view" tabIndex={0} ref={ref}>
         <BranchNode Component={Component} node={root} data={data} />
-        <pre>
-          {JSON.stringify(
-            data.map((d) => ({ ...d, level: getTreeNodeLevel(d) })),
-            null,
-            2
-          )}
-        </pre>
       </div>
     </TreeViewProvider>
   );
